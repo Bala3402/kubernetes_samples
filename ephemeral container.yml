@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app-pod
+spec:
+  containers:
+    - name: distroless-app
+      image: gcr.io/distroless/static-debian11
+  
+  # Injected dynamically during debugging
+  ephemeralContainers:
+    - name: debugger-container
+      image: busybox:1.36
+      stdin: true
+      tty: true
+      targetContainerName: distroless-app # Shares PID namespace with target container
+      command: ["/bin/sh"]
