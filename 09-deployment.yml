@@ -23,3 +23,13 @@ spec:
 
 
             #Avliable replicas local system is 101 
+            #
+# Action	                           Command
+# Apply /  Create	                  kubectl apply -f deployment.yaml
+# Check Status	                    kubectl get deployments
+# View Rollout Progress	            kubectl rollout status deployment/web-app-deployment
+# Check Rollout History	            kubectl rollout history deployment/web-app-deployment
+# Rollback to Previous Version	    kubectl rollout undo deployment/web-app-deployment
+# Scale Dynamically           	    kubectl scale deployment/web-app-deployment --replicas=5
+
+
