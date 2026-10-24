@@ -10,7 +10,5 @@ spec:
         - containerPort: 80
     - name: sidecar
       image: busybox:1.36
-      command:
-        - /bin/sh
-        - -c
-        - while true; do echo "$(date): sidecar running"; sleep 5; done
+      command: ["/bin/sh", "-c"]
+      args: ["while true; do echo hello; sleep 5; done"]
