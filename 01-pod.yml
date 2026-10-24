@@ -1,11 +1,11 @@
 apiVersion: v1
-kind: pod
-metadata: 
-    name: nginx-container
-    labels:
-     app: web
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: web
 spec:
-containers:
+  containers:
   - name: nginx-container
     image: nginx:latest
     ports:
