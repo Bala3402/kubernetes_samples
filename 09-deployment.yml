@@ -5,7 +5,7 @@ metadata:
   labels:
     app: web
 spec:
-  replicas: 200
+  replicas: 5
   selector:
     matchLabels:
       app: web
@@ -19,3 +19,7 @@ spec:
           image: nginx:1.27
           ports:
             - containerPort: 80
+
+
+
+            #Avliable replicas local system is 101 
