@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shared-storage-demo
+  labels:
+    app: multi-container-demo
+spec:
+  # 1. Define the shared volume at the Pod level
+  volumes:
+    - name: shared-data-volume
+      emptyDir: {}   # Ephemeral directory shared between containers
+
+  containers:
+    # 2. First container: Writes data to the shared volume
+    - name: writer-container
+      image: busybox:1.36
+      command: ["/bin/sh", "-c"]
+      args:
+        - >
+          while true; do
+            echo "<h1>Hello from the writer container!</h1><p>Updated at: $(date)</p>" > /data/index.html;
+            sleep 10;
+          done
+      volumeMounts:
+        - name: shared-data-volume
+          mountPath: /data
+
+    # 3. Second container: Reads and serves data from the shared volume
+    - name: web-server
+      image: nginx:alpine
+      ports:
+        - containerPort: 80
+      volumeMounts:
+        - name: shared-data-volume
+          mountPath: /usr/share/nginx/html  # Mounted into NGINX's web root
