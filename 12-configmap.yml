@@ -1,0 +1,61 @@
+apiVersion: v2
+kind: ConfigMap
+metadata:
+  name: app-config
+data:
+  # Key-value pairs used as environment variables
+  APP_MODE: "production"
+  LOG_LEVEL: "info"
+
+  # Configuration file content mounted as a file
+  app.properties: |
+    server.port=8080
+    feature.enabled=true
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmap-demo-pod
+  labels:
+    app: demo
+spec:
+  volumes:
+    # 1. Define volume referencing the ConfigMap
+    - name: config-volume
+      configMap:
+        name: app-config
+
+  containers:
+    - name: app
+      image: busybox:1.36
+      command: ["/bin/sh", "-c"]
+      args:
+        - |
+          echo "=== Environment Variables ==="
+          echo "APP_MODE: $APP_MODE"
+          echo "LOG_LEVEL: $LOG_LEVEL"
+          echo ""
+          echo "=== Mounted File Content (/etc/config/app.properties) ==="
+          cat /etc/config/app.properties
+          echo ""
+          # Keep container running
+          sleep 3600
+
+      # 2. Inject ConfigMap keys as environment variables
+      env:
+        - name: APP_MODE
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: APP_MODE
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: LOG_LEVEL
+
+      # 3. Mount the ConfigMap as files inside the container
+      volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+          readOnly: true
