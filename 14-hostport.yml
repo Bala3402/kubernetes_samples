@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostp5ort-demo-pod
+  labels:
+    app: hostport-demo
+spec:
+  containers:
+    - name: web-server
+      image: nginx:alpine
+      ports:
+        - name: http
+          containerPort: 80     # Port the app listens on inside the container
+          hostPort: 8080        # Port exposed on the host node's IP
+          protocol: TCP
