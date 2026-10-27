@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: nightly-backup-cronjob
+  labels:
+    app: backup
+spec:
+  # Run every day at 02:00 AM
+  schedule: "0 2 * * *"
+  timeZone: "Etc/UTC"
+
+  # If a previous run is still running, do not start a new one
+  concurrencyPolicy: Forbid
+
+  # Keep clean history
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 2
+
+  # Template for the Job that gets generated
+  jobTemplate:
+    spec:
+      backoffLimit: 2     # Retry at most twice if a pod fails
+      template:
+        metadata:
+          labels:
+            app: backup-task
+        spec:
+          restartPolicy: OnFailure    # Must be OnFailure or Never
+          containers:
+            - name: backup-worker
+              image: busybox:1.36
+              command: ["/bin/sh", "-c"]
+              args:
+                - |
+                  echo "=== Backup task started at $(date) ==="
+                  echo "Performing backup operations..."
+                  sleep 10
+                  echo "=== Backup completed successfully ==="

@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: probed-webapp
+  labels:
+    app: webapp
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: webapp
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+        - name: webapp
+          image: nginx:alpine
+          ports:
+            - name: http
+              containerPort: 80
+
+          # 1. Startup Probe: disables liveness/readiness until this succeeds
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+            failureThreshold: 30     # 30 tries * 5s = 150s max startup budget
+            periodSeconds: 5
+
+          # 2. Readiness Probe: controls traffic flow from Service
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+            failureThreshold: 2
+
+          # 3. Liveness Probe: detects fatal application deadlocks
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
